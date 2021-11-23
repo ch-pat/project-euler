@@ -18,15 +18,13 @@ def prime_sum(n):
     candidates = [x for x in range(3, n + 1, 2)]
     total = 0
     primes = [2]
-    counter = 15
-    while candidates and counter:
-        counter -= 1
+    while candidates:
         current = candidates[0]
         primes.append(current)
         candidates = [x for x in candidates if x % current]
-    for x in candidates:
-        if is_prime(x):
-            primes.append(x)
+        if current > sqrt(n) + 1:
+            primes += candidates
+            break
     return sum(primes)
 
 print(prime_sum(2000000))
