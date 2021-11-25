@@ -14,59 +14,35 @@ Which starting number, under one million, produces the longest chain?
 NOTE: Once the chain starts the terms are allowed to go above one million.
 """
 import time
+memo = {1 : [1]}
 
-def collatz_sequence(n):
-    sequence = []
-    while n > 1:
-        sequence.append(n)
-        if n % 2:
-            n = 3 * n + 1
-        else:
-            n = n // 2
-    sequence.append(1)
-    return sequence
+def collatz_sequence(n, memo):
+    if n in memo:
+        return memo[n]
+    if n % 2:
+        sequence = [n] + collatz_sequence(n * 3 + 1, memo)
+        memo[n] = sequence
+        return sequence 
+    else:
+        sequence = [n] + collatz_sequence(n // 2, memo)
+        memo[n] = sequence
+        return sequence
 
 
 start = time.perf_counter()
 limit = 1000000
-sequences = {k:v for k, v in zip(range(1, limit + 1), [[]]*limit)}
-counter = 0
-skips = 0
-for k, v in sequences.items():
-    counter += 1
-    if v:
-        skips += 1
-        continue
-    else:
-        if k % 2:
-            new_sequence = collatz_sequence(k)
-            while new_sequence:
-                start_number = new_sequence.pop(0)
-                if start_number <= limit and not sequences[start_number]:
-                    sequences[start_number] = [start_number] + new_sequence
-                else:
-                    break
-        else:
-            step = k // 2
-            if step <= limit and sequences[step]:
-                sequences[k] = [k] + sequences[step]
-            else:
-                sequences[k] = collatz_sequence(k)
-            previous_step = k * 2
-            if previous_step <= limit and not sequences[previous_step]:
-                current_step = k
-                while previous_step <= limit:
-                    sequences[previous_step] = [previous_step] + sequences[current_step]
-                    previous_step = previous_step * 2
-                    current_step = current_step * 2
 
+for i in range(1, limit + 1):
+    collatz_sequence(i, memo)
 
 longest = []
-for n in range(1, 1000001):
-    current = sequences[n]
-    if len(current) > len(longest):
-        longest = current
-print(longest)
+with open("sequences", "w+") as f:
+    for n in range(1, 1000001):
+        current = memo[n]
+        print(memo[n], file=f)
+        if len(current) > len(longest):
+            longest = current
+    print(longest)
+
 end = time.perf_counter() - start
 print(end)
-print(skips / counter)
