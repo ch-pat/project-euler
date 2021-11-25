@@ -36,13 +36,11 @@ for i in range(1, limit + 1):
     collatz_sequence(i, memo)
 
 longest = []
-with open("sequences", "w+") as f:
-    for n in range(1, 1000001):
-        current = memo[n]
-        print(memo[n], file=f)
-        if len(current) > len(longest):
-            longest = current
-    print(longest)
+for n in range(1, 1000001):
+    current = memo[n]
+    if len(current) > len(longest):
+        longest = current
+print(longest)
 
 end = time.perf_counter() - start
 print(end)
